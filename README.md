@@ -193,10 +193,8 @@ return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 
 	// Use secant method for derivatives of the second object function
 	Derivation2D                   derivation   = new Derivation2D(1e-6);
-	Function2D                     derivative21 = derivation
-												  .derive1(getObjectFunction2Closed(n));
-	Function2D                     derivative22 = derivation
-												  .derive2(getObjectFunction2Closed(n));
+	Function2D                     derivative21 = derivation.derive1(object2Closed);
+	Function2D                     derivative22 = derivation.derive2(object2Closed);
 
 	// Prepare result objects
 	Vector2D                       object       = new Vector2D();
@@ -213,12 +211,9 @@ return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 	
 		// Compute
 		double a = input.x, b = input.y;
-		double val0 = PolyGamma.digamma(a + n + 1.0d) 
-					  - PolyGamma.digamma(a + 1.0d);
-		double val1 = PolyGamma.trigamma(a + b + 1.0d) 
-					  - PolyGamma.trigamma(a + b + n + 1.0d);
-		double val2 = b * (PolyGamma.trigamma(a + n + 1.0d) 
-					  - PolyGamma.trigamma(a + 1.0d));
+		double val0 = digamma(a + n + 1.0d) - digamma(a + 1.0d);
+		double val1 = trigamma(a + b + 1.0d) - trigamma(a + b + n + 1.0d);
+		double val2 = b * (trigamma(a + n + 1.0d) - trigamma(a + 1.0d));
         
         // Store
 		object.x = b * val0;
