@@ -109,7 +109,7 @@ util.isSameFunction2(object1Closed, object1, 0, 1, 0.001d, 1, 0.1d);
 ```
 
 For example, the last method compares both functions for y-values in the range [0,1] with a stepping of 0.001 and
-a fixed parameter x=1. The functions are considered to be equal, when their results do not differ by more than 10% (0.1).
+a fixed parameter *x = 1*. The functions are considered to be equal, when their results do not differ by more than 10% (0.1).
 
 Using the closed forms of our object functions will greatly speed up our computations, by a factor of about 7000.
 We can also see the effect of the approximate nature of our implementations of digamma and trigamma, as the 
@@ -131,7 +131,7 @@ Again, we can use software like Wolfram|Alpha. In this case to find partial deri
 [![Formula1](https://raw.github.com/prasser/newtonraphson/master/media/formula2_da.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula2_da.png)
 [![Formula2](https://raw.github.com/prasser/newtonraphson/master/media/formula2_db.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula2_db.png)
 
-With our approximations of digamma and trigamma, we can implement the first partial derivative do1/da like this:
+With our approximations of digamma and trigamma, we can implement the first partial derivative *d/da* of the first object function like this:
 
 ```Java
 // Function2D derivative11...
@@ -139,7 +139,7 @@ double a = input.x, b = input.y;
 return b * (PolyGamma.trigamma(a + n + 1.0d) - PolyGamma.trigamma(a + 1.0d));
 ```
 
-And the second partial derivative do1/db like this:
+And the second partial derivative *d/db* of the first object function like this:
 
 ```Java
 // Function2D derivative12...
