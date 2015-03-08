@@ -5,7 +5,7 @@ for solving *bivariate non-linear equation systems*.
 
 ## Example
 
-As an example, we solve the following equation system:
+As an example, we solve the following equation system (a and b are our variables):
 
 [![Equation system](https://raw.github.com/prasser/newtonraphson/master/media/system.png)](https://raw.github.com/prasser/newtonraphson/master/media/system.png)
 
@@ -76,7 +76,8 @@ solver = new NewtonRaphson2D(object1, object2, constraint1, constraint2)...
 
 ### First enhanced solution
 
-We can use software like Wolfram|Alpha to find closed forms of our object functions to speed up computations:
+We can use software like [Wolfram|Alpha](http://www.wolframalpha.com/)
+to find closed forms of our object functions to speed up computations:
 
 [![Formula1](https://raw.github.com/prasser/newtonraphson/master/media/formula1_closed.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula1_closed.png)
 [![Formula2](https://raw.github.com/prasser/newtonraphson/master/media/formula2_closed.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula2_closed.png)
@@ -110,7 +111,9 @@ util.isSameFunction2(object1Closed, object1, 0, 1, 0.001d, 1, 0.1d);
 For example, the last method compares both functions for y-values in the range [0,1] with a stepping of 0.001 and
 a fixed parameter x=1. The functions are considered to be equal, when their results do not differ by more than 10% (0.1).
 
-Using the closed forms of our object functions will greatly speed up our computations, by a factor of about 7000:
+Using the closed forms of our object functions will greatly speed up our computations, by a factor of about 7000.
+We can also see the effect of the approximate nature of our implementations of digamma and trigamma, as the 
+algorithm converges more quickly (7 iterations instead of 19):
 
 Measure    | Value
 ---------- | -------------
