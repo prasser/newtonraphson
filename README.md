@@ -82,6 +82,7 @@ We can use software like Wolfram|Alpha to find closed forms of our object functi
 Now we can rewrite the first object function like this:
 
 ```Java
+// Function2D object1Closed
 double a = input.x, b = input.y;
 return b * (PolyGamma.digamma(a + n + 1.0d) - PolyGamma.digamma(a + 1.0d));
 ```
@@ -89,6 +90,7 @@ return b * (PolyGamma.digamma(a + n + 1.0d) - PolyGamma.digamma(a + 1.0d));
 And the second object function like this:
 
 ```Java
+// Function2D object2Closed
 double a = input.x, b = input.y;
 return PolyGamma.trigamma(a + b + 1.0d) - PolyGamma.trigamma(a + b + n + 1.0d);
 ```
@@ -97,11 +99,10 @@ did'nt make any errors when converting or implementing the functions:
 
 ```Java
 Function2DUtil util = new Function2DUtil(1e-6);
-        
-util.isSameFunction1(objectFunction1Closed, objectFunction1Iterative, 0, 100, 0.1d, 1, 0.1d);
-util.isSameFunction1(objectFunction1Closed, objectFunction1Iterative, 0, 1, 0.001d, 1, 0.1d);
-util.isSameFunction2(objectFunction1Closed, objectFunction1Iterative, 0, 100, 0.1d, 1, 0.1d);
-util.isSameFunction2(objectFunction1Closed, objectFunction1Iterative, 0, 1, 0.001d, 1, 0.1d);
+util.isSameFunction1(object1Closed, object1, 0, 100, 0.1d, 1, 0.1d);
+util.isSameFunction1(object1Closed, object1, 0, 1, 0.001d, 1, 0.1d);
+util.isSameFunction2(object1Closed, object1, 0, 100, 0.1d, 1, 0.1d);
+util.isSameFunction2(object1Closed, object1, 0, 1, 0.001d, 1, 0.1d);
 ```
 
 For example, the last method compares both functions for y-values in the range [0,1] with a stepping of 0.001 and
@@ -143,10 +144,10 @@ Again, we can run a simple check, to compare our explicit forms with the results
 
 ```Java
 Function2DUtil util = new Function2DUtil(1e-6);        
-util.isDerivativeFunction1(objectFunction1Closed, derivative11, 0, 100, 0.1d, 1, 0.1d);
-util.isDerivativeFunction1(objectFunction1Closed, derivative11, 0, 1, 0.001d, 1, 0.1d);
-util.isDerivativeFunction2(objectFunction1Closed, derivative12, 0, 100, 0.1d, 1, 0.1d);
-util.isDerivativeFunction2(objectFunction1Closed, derivative12, 0, 1, 0.001d, 1, 0.1d);
+util.isDerivativeFunction1(object1Closed, derivative11, 0, 100, 0.1d, 1, 0.1d);
+util.isDerivativeFunction1(object1Closed, derivative11, 0, 1, 0.001d, 1, 0.1d);
+util.isDerivativeFunction2(object1Closed, derivative12, 0, 100, 0.1d, 1, 0.1d);
+util.isDerivativeFunction2(object1Closed, derivative12, 0, 1, 0.001d, 1, 0.1d);
 ```
 
 For the two partial derivatives of our second object function we still use a secant method:
@@ -160,7 +161,7 @@ Function2D derivative22 = derivation.derive2(object2);
 And run the solver:
 
 ```Java
-solver = new NewtonRaphson2D(object1, object2, 
+solver = new NewtonRaphson2D(object1Closed, object2Closed, 
 							 derivative11, derivative12, 
 							 derivative21, derivative22).solve();
 ```
