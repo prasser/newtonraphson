@@ -59,8 +59,8 @@ Tries      | 1
 Iterations | 19
 Quality    | 99.864987 [%]
 
-We know that the derivatives of the first object function are only defined for a > -1 and that the derivatives of
-the second object function are only defined for a + b > - 1. So we may specify constraints:
+We know that the derivatives of the first object function are only defined for *a > -1* and that the derivatives of
+the second object function are only defined for *a + b > -1*. So we may specify constraints:
 
 ```Java
 Constraint2D constraint1 = new Constraint2D(){ 
