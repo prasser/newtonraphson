@@ -51,11 +51,13 @@ NewtonRaphson2D solver = new NewtonRaphson2D(object1, object2)
 ```
 
 This very simple variant of the solver will use a secant method for approximating the derivatives. The result is:
- 
-Time       : 78.3 [ms]
-Tries      : 1
-Iterations : 19
-Quality    : 99.864987 [%]
+
+Measure    | Value
+---------- | -------------
+Time       | 78.3 [ms]
+Tries      | 1
+Iterations | 19
+Quality    | 99.864987 [%]
 
 We know that the derivatives of the first object function are only defined for a > -1 and that the derivatives of
 the second object function are only defined for a + b > - 1. So we may specify constraints:
@@ -109,12 +111,14 @@ For example, the last method compares both functions for y-values in the range [
 a fixed parameter x=1. The functions are considered to be equal, when their results do not differ by more than 10% (0.1).
 
 Using the closed forms of our object functions will greatly speed up our computations, by a factor of about 7000:
- 
-Time       : 0.01 [ms]
-Tries      : 1
-Iterations : 7
-Quality    : 99.872340[%]
 
+Measure    | Value
+---------- | -------------
+Time       | 0.01 [ms]
+Tries      | 1
+Iterations | 7
+Quality    | 99.872340[%]
+ 
 ### Second enhanced solution
 
 Again, we can use software like Wolfram|Alpha. In this case to find partial derivatives of our object functions:
@@ -167,11 +171,13 @@ solver = new NewtonRaphson2D(object1Closed, object2Closed,
 ```
 
 Using the explicit forms of some derivatives will again speed up our computations, this time by a factor of about 2:
- 
-Time       : 0.004 [ms]
-Tries      : 1
-Iterations : 7
-Quality    : 99.872340[%]
+
+Measure    | Value
+---------- | -------------
+Time       | 0.004 [ms]
+Tries      | 1
+Iterations | 7
+Quality    | 99.872340[%]
 
 ### Third enhanced solution
 
@@ -224,11 +230,13 @@ return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 ```
 
 This will speed up our computations by an additional 25%:
- 
-Time       : 0.003 [ms]
-Tries      : 1
-Iterations : 7
-Quality    : 99.872340[%]
+
+Measure    | Value
+---------- | -------------
+Time       | 0.003 [ms]
+Tries      | 1
+Iterations | 7
+Quality    | 99.872340[%]
 
 Download
 ------
