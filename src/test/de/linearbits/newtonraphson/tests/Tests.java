@@ -15,8 +15,6 @@
  */
 package de.linearbits.newtonraphson.tests;
 
-import java.text.DecimalFormat;
-
 import de.linearbits.newtonraphson.Constraint2D;
 import de.linearbits.newtonraphson.Derivation2D;
 import de.linearbits.newtonraphson.Function;
@@ -174,15 +172,8 @@ public class Tests {
         
         double time = (System.currentTimeMillis() - start) / (double)repetitions;
         System.out.println("Time    : " + time);
-        
-        double v1  = object1.evaluate(result);
-        double v2  = object2.evaluate(result);
-        double quality = (1.0d - Math.sqrt(v1*v1 + v2+v2))*100d;
-        
-        DecimalFormat format = new DecimalFormat("##0.000000");
         System.out.println(solver.getMeasures());
         System.out.println("Result  : " + result);
-        System.out.println("Quality : " + format.format(quality) + "[%]");
     }
 
     /**

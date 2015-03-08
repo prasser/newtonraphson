@@ -21,23 +21,34 @@ package de.linearbits.newtonraphson;
  */
 public class NewtonRaphsonMeasures {
 
-    /** Iterations*/
-    private final int iterations;
-    /** Time*/
-    private final int time;
-    /** Tries*/
-    private final int tries;
+    /** Iterations */
+    private final int    iterations;
+    /** Time */
+    private final int    time;
+    /** Tries */
+    private final int    tries;
+    /** Result quality */
+    private final double quality;
     
     /**
      * Creates a new instance
      * @param iterations
      * @param tries
      * @param time
+     * @param quality
      */
-    NewtonRaphsonMeasures(int iterations, int tries, int time) {
+    NewtonRaphsonMeasures(int iterations, int tries, int time, double quality) {
         this.iterations = iterations;
         this.tries = tries;
         this.time = time;
+        this.quality = quality;
+    }
+
+    /**
+     * Returns the result quality, defined as the euclidean distance from a solution
+     */
+    public double getQuality() {
+        return quality;
     }
 
     /**
@@ -67,6 +78,7 @@ public class NewtonRaphsonMeasures {
         builder.append("Measures: (Time: ").append(time).append(" [ms]");
         builder.append(", Tries: ").append(tries);
         builder.append(", Iterations: ").append(iterations);
+        builder.append(", Quality: ").append(quality);
         builder.append(")");
         return builder.toString();
     }
