@@ -18,7 +18,7 @@ package de.linearbits.newtonraphson.tests;
 import java.text.DecimalFormat;
 
 import de.linearbits.newtonraphson.Constraint2D;
-import de.linearbits.newtonraphson.Derivation;
+import de.linearbits.newtonraphson.Derivation2D;
 import de.linearbits.newtonraphson.Function;
 import de.linearbits.newtonraphson.Function2D;
 import de.linearbits.newtonraphson.Function2DUtil;
@@ -118,7 +118,7 @@ public class Tests {
         object1 = getObjectFunction1Closed(N);
         object2 = getObjectFunction2Closed(N);
         
-        Derivation derivation = new Derivation(1e-6);
+        Derivation2D derivation = new Derivation2D(1e-6);
         
         Function2D derivative11 = getDerivativeFunction11Closed(N);
         Function2D derivative12 = getDerivativeFunction12Closed(N);
@@ -291,7 +291,7 @@ public class Tests {
         return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 
             // Use secant method for derivatives of the second object function
-            private final Derivation                     derivation   = new Derivation(1e-6);
+            private final Derivation2D                     derivation   = new Derivation2D(1e-6);
             private final Function2D                     derivative21 = derivation.derive1(getObjectFunction2Closed(n));
             private final Function2D                     derivative22 = derivation.derive2(getObjectFunction2Closed(n));
 

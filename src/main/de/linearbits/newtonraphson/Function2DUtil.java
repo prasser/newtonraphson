@@ -63,7 +63,7 @@ public class Function2DUtil {
                                                 double y,
                                                 double accuracy) {
         
-        Derivation derivation = new Derivation(this.delta);
+        Derivation2D derivation = new Derivation2D(this.delta);
         Function2D estimate = derivation.derive1(function);
         return isSameFunction1(estimate, derivative, x1, x2, delta, y, accuracy);
     }
@@ -87,7 +87,7 @@ public class Function2DUtil {
                                                 double x,
                                                 double accuracy) {
 
-        Derivation derivation = new Derivation(this.delta);
+        Derivation2D derivation = new Derivation2D(this.delta);
         Function2D estimate = derivation.derive2(function);
         return isSameFunction2(estimate, derivative, y1, y2, delta, x, accuracy);
     }

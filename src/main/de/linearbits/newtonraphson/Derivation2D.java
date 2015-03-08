@@ -20,7 +20,7 @@ package de.linearbits.newtonraphson;
  * 
  * @author Fabian Prasser
  */
-public class Derivation {
+public class Derivation2D {
 
     /** Delta */
     private static final double DEFAULT_DELTA = 1e-6;
@@ -31,7 +31,7 @@ public class Derivation {
     /**
      * Creates a new instance
      */
-    public Derivation() {
+    public Derivation2D() {
         this.delta = DEFAULT_DELTA;
     }
 
@@ -39,7 +39,7 @@ public class Derivation {
      * Creates a new instance
      * @param delta
      */
-    public Derivation(double delta) {
+    public Derivation2D(double delta) {
         this.delta = delta;
     }
 

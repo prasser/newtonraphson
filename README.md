@@ -142,8 +142,7 @@ return PolyGamma.digamma(a + n + 1.0d) - PolyGamma.digamma(a + 1.0d);
 Again, we can run a simple check, to compare our explicit forms with the results of the secant method:
 
 ```Java
-Function2DUtil util = new Function2DUtil(1e-6);
-        
+Function2DUtil util = new Function2DUtil(1e-6);        
 util.isDerivativeFunction1(objectFunction1Closed, derivative11, 0, 100, 0.1d, 1, 0.1d);
 util.isDerivativeFunction1(objectFunction1Closed, derivative11, 0, 1, 0.001d, 1, 0.1d);
 util.isDerivativeFunction2(objectFunction1Closed, derivative12, 0, 100, 0.1d, 1, 0.1d);
@@ -153,6 +152,7 @@ util.isDerivativeFunction2(objectFunction1Closed, derivative12, 0, 1, 0.001d, 1,
 For the two partial derivatives of our second object function we still use a secant method:
 
 ```Java
+Derivation2D derivation = new Derivation2D(1e-6);
 Function2D derivative21 = derivation.derive1(object2);
 Function2D derivative22 = derivation.derive2(object2);
 ```
@@ -160,7 +160,9 @@ Function2D derivative22 = derivation.derive2(object2);
 And run the solver:
 
 ```Java
-solver = new NewtonRaphson2D(object1, object2, derivative11, derivative12, derivative21, derivative22).solve();
+solver = new NewtonRaphson2D(object1, object2, 
+							 derivative11, derivative12, 
+							 derivative21, derivative22).solve();
 ```
 
 Using the explicit forms of some derivatives will again speed up our computations, this time by a factor of about 2:
@@ -180,7 +182,7 @@ derivatives at the same time:
 return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 
 	// Use secant method for derivatives of the second object function
-	Derivation                     derivation   = new Derivation(1e-6);
+	Derivation2D                   derivation   = new Derivation2D(1e-6);
 	Function2D                     derivative21 = derivation.derive1(getObjectFunction2Closed(n));
 	Function2D                     derivative22 = derivation.derive2(getObjectFunction2Closed(n));
 
