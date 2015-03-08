@@ -221,8 +221,10 @@ return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 					  - PolyGamma.trigamma(a + 1.0d));
         
         // Store
-		object.x = b * val0;   object.y = val1;
-		derivatives.x1 = val2; derivatives.x2 = val0;
+		object.x = b * val0;
+		object.y = val1;
+		derivatives.x1 = val2;
+		derivatives.x2 = val0;
         derivatives.y1 = derivative21.evaluate(input);
         derivatives.y2 = derivative22.evaluate(input);
         
