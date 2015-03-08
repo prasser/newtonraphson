@@ -5,7 +5,7 @@ for solving *bivariate non-linear equation systems*.
 
 ## Example
 
-As an example, we solve the following equation system (*a* and *b* are our variables):
+As an example, we solve the following equation system (*a* and *b* are our variables) for n = 123412:
 
 [![Equation system](https://raw.github.com/prasser/newtonraphson/master/media/system.png)](https://raw.github.com/prasser/newtonraphson/master/media/system.png)
 
