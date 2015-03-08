@@ -123,7 +123,7 @@ Again, we can use software like Wolfram|Alpha. In this case to find partial deri
 [![Formula1](https://raw.github.com/prasser/newtonraphson/master/media/formula2_da.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula2_da.png)
 [![Formula2](https://raw.github.com/prasser/newtonraphson/master/media/formula2_db.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula2_db.png)
 
-With our approximations of digamma and trigamma, we can implement the first to partial derivative do1/da:
+With our approximations of digamma and trigamma, we can implement the first partial derivative do1/da like this:
 
 ```Java
 // Function2D derivative11...
@@ -131,7 +131,7 @@ double a = input.x, b = input.y;
 return b * (PolyGamma.trigamma(a + n + 1.0d) - PolyGamma.trigamma(a + 1.0d));
 ```
 
-And the second partial derivative do1/db:
+And the second partial derivative do1/db like this:
 
 ```Java
 // Function2D derivative12...
