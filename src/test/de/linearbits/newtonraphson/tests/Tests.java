@@ -15,8 +15,9 @@
  */
 package de.linearbits.newtonraphson.tests;
 
+import java.text.DecimalFormat;
+
 import de.linearbits.newtonraphson.Constraint2D;
-import de.linearbits.newtonraphson.Derivation2D;
 import de.linearbits.newtonraphson.Function;
 import de.linearbits.newtonraphson.Function2D;
 import de.linearbits.newtonraphson.Function2DUtil;
@@ -24,7 +25,6 @@ import de.linearbits.newtonraphson.NewtonRaphson2D;
 import de.linearbits.newtonraphson.Pair;
 import de.linearbits.newtonraphson.SquareMatrix2D;
 import de.linearbits.newtonraphson.Vector2D;
-import de.linearbits.polygamma.PolyGamma;
 
 /**
  * Some very basic tests
@@ -32,143 +32,74 @@ import de.linearbits.polygamma.PolyGamma;
  */
 public class Tests {
 
-    /** N */
-    private static final int    N        = 123456;
-    /** C1 */
-    private static final double C1       = 0.025911404898870522;
-    /** C2 */
-    private static final double C2       = 9.25018224693155E-5;
-    /** Accuracy */
-    private static final double ACCURACY = 0.01d;
-    
     /**
      * Entry point
      * @param args
      */
     public static void main(String[] args) {
         
-        // First object function : sum[b/(a+i),i=1 to n] - c1 
-        // Second object function: sum[1/(a+b+i)^2,i=1 to n] - c2
-        
-        // With c1 = 0.025911404898870522
-        // And c2 = 9.25018224693155E-5
-        // And n = 123456;
+        // First object function : 3 * x^2 + 2 * y^2 - 35 = 0
+        // Second object function: 4 * x^2 - 3 * y^2 - 24 = 0
         //
-        // We have a solution at:
-        // a = 10000
-        // b = 0.01
+        // This system has four solutions: (+-3, +-2)
         
-        /* **********************************************************
-         *  Solve with iterative implementations and no derivatives *
-         ************************************************************/
+        /* ****************************
+         *  Solve without derivatives *
+         ******************************/
 
-        Function2D object1 = getObjectFunction1Iterative();
-        Function2D object2 = getObjectFunction2Iterative();
+        Function2D object1 = getObjectFunction1();
+        Function2D object2 = getObjectFunction2();
         
         NewtonRaphson2D solver = new NewtonRaphson2D(object1, object2)
                                                      .accuracy(1e-6)
                                                      .iterationsPerTry(1000)
                                                      .iterationsTotal(100000);
         
-        solve(object1, object2, solver, 100);
+        solve(object1, object2, solver, 1000000);
 
-        /* ***********************************************************************
-         *  Solve with iterative implementations and, derivatives and constraints*
-         *************************************************************************/
+        /* *************************************************
+         *  Solve without derivatives but with constraints *
+         ***************************************************/
 
-        object1 = getObjectFunction1Iterative();
-        object2 = getObjectFunction2Iterative();
-
-        // d1/da and d1/db are only defined for a > -1
-        Constraint2D constraint1 = new Constraint2D(){ 
-            public Boolean evaluate(Vector2D input) { return input.x > -1; } };
-            
-        // a2/da and d2/db are only defined for a + b > -1
-        Constraint2D constraint2 = new Constraint2D(){ 
-            public Boolean evaluate(Vector2D input) { return input.x + input.y > -1; } };
+        // We want a solution in the negative range
+        Constraint2D constraint = new Constraint2D(){ 
+            public Boolean evaluate(Vector2D input) { 
+                return input.x < 0 && input.y < 0; 
+            }
+        };
         
-        solver = new NewtonRaphson2D(object1, object2, constraint1, constraint2)
+        solver = new NewtonRaphson2D(object1, object2, constraint)
                                      .accuracy(1e-6)
                                      .iterationsPerTry(1000)
                                      .iterationsTotal(100000);
         
-        solve(object1, object2, solver, 100);
+        solve(object1, object2, solver, 1000000);
+        
+        /* *************************
+         *  Solve with derivatives *
+         ***************************/
+        
+        Function2D derivative11 = getDerivativeFunction11();
+        Function2D derivative12 = getDerivativeFunction12();
+        Function2D derivative21 = getDerivativeFunction21();
+        Function2D derivative22 = getDerivativeFunction22();
 
-        
-        /* *******************************************************
-         *  Solve with closed implementations and no derivatives *
-         *********************************************************/
-        
-        object1 = getObjectFunction1Closed();
-        object2 = getObjectFunction2Closed();
+        solver = new NewtonRaphson2D(object1, object2, 
+                                     derivative11, derivative12,
+                                     derivative21, derivative22)
+                                     .accuracy(1e-6)
+                                     .iterationsPerTry(1000)
+                                     .iterationsTotal(100000);
         
         Function2DUtil util = new Function2DUtil(1e-6);
+        System.out.println("\nChecking derivatives:");
+        System.out.println("Is derivative: " + util.isDerivativeFunction1(object1, derivative11, 0.01, 100, 0.001, 0.1d, 0.01d));
+        System.out.println("Is derivative: " + util.isDerivativeFunction2(object1, derivative12, 0.01, 100, 0.001, 0.1d, 0.01d));
+        System.out.println("Is derivative: " + util.isDerivativeFunction1(object2, derivative21, 0.01, 100, 0.001, 0.1d, 0.01d));
+        System.out.println("Is derivative: " + util.isDerivativeFunction2(object2, derivative22, 0.01, 100, 0.001, 0.1d, 0.01d));
         
-        System.out.println("\nChecking first object function:");
-        System.out.println("Is same: " + util.isSameFunction1(object1, getObjectFunction1Iterative(), 0, 100, 0.1d, 1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction1(object1, getObjectFunction1Iterative(), 0, 1, 0.001d, 1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 0, 100, 0.1d, 1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 0, 1, 0.001d, 1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 0, 100, 0.1d, -1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 0, 1, 0.001d, -1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction1(object1, getObjectFunction1Iterative(), 10000000, 10000100, 0.1d, -1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction1(object1, getObjectFunction1Iterative(), 10000000, 10000001, 0.001d, -1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 10000000, 10000100, 0.1d, 1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 10000000, 10000001, 0.001d, 1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 10000000, 10000100, 0.1d, -1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 10000000, 10000001, 0.001d, -1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 0, 100, 0.1d, -100000000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object1, getObjectFunction1Iterative(), 0, 1, 0.001d, -100000000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction1(object1, getObjectFunction1Iterative(), 10000000, 10000100, 0.1d, -100000000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction1(object1, getObjectFunction1Iterative(), 10000000, 10000001, 0.001d, -100000000, ACCURACY));
+        solve(object1, object2, solver, 1000000);
         
-        System.out.println("\nChecking second object function:");
-        System.out.println("Is same: " + util.isSameFunction1(object2, getObjectFunction2Iterative(), 0, 100, 0.1d, 1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction1(object2, getObjectFunction2Iterative(), 0, 1, 0.001d, 1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object2, getObjectFunction2Iterative(), 0, 100, 0.1d, 1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object2, getObjectFunction2Iterative(), 0, 1, 0.001d, 1, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction1(object2, getObjectFunction2Iterative(), 10000000, 10000100, 0.1d, -1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction1(object2, getObjectFunction2Iterative(), 10000000, 10000001, 0.001d, -1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object2, getObjectFunction2Iterative(), 10000000, 10000100, 0.1d, -1000, ACCURACY));
-        System.out.println("Is same: " + util.isSameFunction2(object2, getObjectFunction2Iterative(), 10000000, 10000001, 0.001d, -1000, ACCURACY));
-        
-        solver = new NewtonRaphson2D(object1, object2)
-                                     .accuracy(1e-6)
-                                     .iterationsPerTry(1000)
-                                     .iterationsTotal(100000);
-
-        solve(object1, object2, solver, 100000);
-
-        /* *********************************************************
-         *  Solve with closed implementations with two derivatives *
-         ***********************************************************/
-        
-        object1 = getObjectFunction1Closed();
-        object2 = getObjectFunction2Closed();
-        
-        Derivation2D derivation = new Derivation2D(1e-6);
-        
-        Function2D derivative11 = getDerivativeFunction11Closed();
-        Function2D derivative12 = getDerivativeFunction12Closed();
-        Function2D derivative21 = derivation.derive1(object2);
-        Function2D derivative22 = derivation.derive2(object2);
-        
-        System.out.println("\nChecking first derivative:");
-        System.out.println("Is derivative: " + util.isDerivativeFunction1(object1, derivative11, 0, 100, 0.1d, 1, ACCURACY));
-        System.out.println("Is derivative: " + util.isDerivativeFunction1(object1, derivative11, 0, 1, 0.001d, 1, ACCURACY));
-        
-        System.out.println("\nChecking second derivative:");
-        System.out.println("Is derivative: " + util.isDerivativeFunction2(object1, derivative12, 0, 100, 0.1d, 1, ACCURACY));
-        System.out.println("Is derivative: " + util.isDerivativeFunction2(object1, derivative12, 0, 1, 0.001d, 1, ACCURACY));
-        
-        solver = new NewtonRaphson2D(object1, object2,
-                                     derivative11, derivative12, derivative21, derivative22)
-                                     .accuracy(1e-6)
-                                     .iterationsPerTry(1000)
-                                     .iterationsTotal(100000);
-
-        solve(object1, object2, solver, 100000);
-
         /* *****************************
          *  Solve with master function *
          *******************************/
@@ -179,7 +110,124 @@ public class Tests {
                                      .iterationsPerTry(1000)
                                      .iterationsTotal(100000);
         
-        solve(object1, object2, solver, 100000);
+        solve(object1, object2, solver, 1000000);
+    }
+    
+    /**
+     * Returns an implementation of the first derivative of the first object function:<br>
+     * 6 * x
+     * @return
+     */
+    private static Function2D getDerivativeFunction11() {
+        return new Function2D() {
+            public Double evaluate(Vector2D input) {
+                return 6d * input.x;
+            }
+        };
+    }
+
+    /**
+     * Returns an implementation of the second derivative of the first object function:<br>
+     * 4 * y
+     * @return
+     */
+    private static Function2D getDerivativeFunction12() {
+        return new Function2D() {
+            public Double evaluate(Vector2D input) {
+                return 4d * input.y;
+            }
+        };
+    }
+    
+    /**
+     * Returns an implementation of the first derivative of the second object function:<br>
+     * 8 * x
+     * @return
+     */
+    private static Function2D getDerivativeFunction21() {
+        return new Function2D() {
+            public Double evaluate(Vector2D input) {
+                return 8d * input.x;
+            }
+        };
+    }
+
+    /**
+     * Returns an implementation of the second derivative of the second object function:<br>
+     * - 6 * y
+     * @return
+     */
+    private static Function2D getDerivativeFunction22() {
+        return new Function2D() {
+            public Double evaluate(Vector2D input) {
+                return - 6d * input.y;
+            }
+        };
+    }
+    
+    /**
+     * Returns the master function
+     * @return
+     */
+    private static Function<Vector2D, Pair<Vector2D, SquareMatrix2D>> getMasterFunction() {
+        
+        // Return function
+        return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
+
+            private final SquareMatrix2D                 derivatives  = new SquareMatrix2D();
+            // Prepare result objects
+            private final Vector2D                       object       = new Vector2D();
+            private final Pair<Vector2D, SquareMatrix2D> result       = new Pair<Vector2D, SquareMatrix2D>(object, derivatives);
+
+            /**
+             * Eval
+             * @param input
+             * @return
+             */
+            public Pair<Vector2D, SquareMatrix2D> evaluate(Vector2D input) {
+                
+                // Prepare
+                double xSquare = input.x * input.x;
+                double ySquare = input.y * input.y;
+                
+                // Compute
+                object.x = 3d * xSquare + 2d * ySquare - 35d;
+                object.y = 4d * xSquare - 3d * ySquare - 24d;
+                derivatives.x1 = + 6d * input.x;
+                derivatives.x2 = + 4d * input.y;
+                derivatives.y1 = + 8d * input.x;
+                derivatives.y2 = - 6d * input.y;
+                
+                // Return
+                return result;
+            }
+        };
+    }
+    
+    /**
+     * Returns an implementation of the first object function:<br>
+     * 3 * x^2 + 2 * y^2 - 35 = 0 
+     * @return
+     */
+    private static Function2D getObjectFunction1() {
+        return new Function2D() {
+            public Double evaluate(Vector2D input) {
+                return 3d * input.x * input.x + 2d * input.y * input.y - 35d;
+            }
+        };
+    }
+    
+    /**
+     * Returns an implementation of the second object function:<br>
+     * 4 * x^2 - 3 * y^2 - 24 = 0
+     * @return
+     */
+    private static Function2D getObjectFunction2() {
+        return new Function2D() {
+            public Double evaluate(Vector2D input) {
+                return 4d * input.x * input.x - 3d * input.y * input.y - 24d;
+            }
+        };
     }
     
     /**
@@ -199,144 +247,10 @@ public class Tests {
         System.out.println("\nResults");
         System.out.println("*******");
         
+        DecimalFormat format = new DecimalFormat("0.000000");
         double time = (System.currentTimeMillis() - start) / (double)repetitions;
-        System.out.println("Time    : " + time);
+        System.out.println("Time    : " + format.format(time));
         System.out.println(solver.getMeasures());
         System.out.println("Result  : " + result);
-    }
-
-    /**
-     * Returns an iterative implementation of the first object function
-     * @return
-     */
-    private static Function2D getObjectFunction1Iterative() {
-        return new Function2D() {
-            public Double evaluate(Vector2D input) {
-                double a = input.x, b = input.y, v = 0d;
-                for (int i = 1; i <= N; i++) {
-                    v += b / (a + i);
-                }
-                return v - C1;
-            }
-        };
-    }
-    
-    /**
-     * Returns an iterative implementation of the second object function
-     * @return
-     */
-    private static Function2D getObjectFunction2Iterative() {
-        return new Function2D() {
-            public Double evaluate(Vector2D input) {
-                double ab = input.x + input.y, v = 0d;
-                for (int i = 1; i <= N; i++) {
-                    double t = ab + i;
-                    v += 1d / (t * t);
-                }
-                return v - C2;
-            }
-        };
-    }
-
-    /**
-     * Returns a closed implementation of the first object function
-     * @return
-     */
-    private static Function2D getObjectFunction1Closed() {
-        return new Function2D() {
-            public Double evaluate(Vector2D input) {
-                double a = input.x, b = input.y;
-                double v = b * (PolyGamma.digamma(a + N + 1.0d) - PolyGamma.digamma(a + 1.0d));
-                return v - C1;
-            }
-        };
-    }
-    
-    /**
-     * Returns a closed implementation of the second object function
-     * @return
-     */
-    private static Function2D getObjectFunction2Closed() {
-        return new Function2D() {
-            public Double evaluate(Vector2D input) {
-                double a = input.x, b = input.y;
-                double v = PolyGamma.trigamma(a + b + 1.0d) - PolyGamma.trigamma(a + b + N + 1.0d);
-                return v - C2;
-            }
-        };
-    }
-
-    /**
-     * Returns a closed implementation of the first derivative of the first object function
-     * @return
-     */
-    private static Function2D getDerivativeFunction11Closed() {
-        return new Function2D() {
-            public Double evaluate(Vector2D input) {
-                double a = input.x, b = input.y;
-                double v = b * (PolyGamma.trigamma(a + N + 1.0d) - PolyGamma.trigamma(a + 1.0d));
-                return v;
-            }
-        };
-    }
-
-    /**
-     * Returns a closed implementation of the second derivative of the first object function
-     * @return
-     */
-    private static Function2D getDerivativeFunction12Closed() {
-        return new Function2D() {
-            public Double evaluate(Vector2D input) {
-                double a = input.x;
-                double v = PolyGamma.digamma(a + N + 1.0d) - PolyGamma.digamma(a + 1.0d);
-                return v;
-            }
-        };
-    }
-    
-    /**
-     * Returns the master function
-     * @return
-     */
-    private static Function<Vector2D, Pair<Vector2D, SquareMatrix2D>> getMasterFunction() {
-        
-        // Return function
-        return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
-
-            // Use secant method for derivatives of the second object function
-            private final Derivation2D                     derivation   = new Derivation2D(1e-6);
-            private final Function2D                     derivative21 = derivation.derive1(getObjectFunction2Closed());
-            private final Function2D                     derivative22 = derivation.derive2(getObjectFunction2Closed());
-
-            // Prepare result objects
-            private final Vector2D                       object       = new Vector2D();
-            private final SquareMatrix2D                 derivatives  = new SquareMatrix2D();
-            private final Pair<Vector2D, SquareMatrix2D> result       = new Pair<Vector2D, SquareMatrix2D>(object, derivatives);
-
-            /**
-             * Eval
-             * @param input
-             * @return
-             */
-            public Pair<Vector2D, SquareMatrix2D> evaluate(Vector2D input) {
-                
-                // Compute
-                double a = input.x, b = input.y;
-                double val0 = PolyGamma.digamma(a + N + 1.0d) - PolyGamma.digamma(a + 1.0d);
-                double val1 = PolyGamma.trigamma(a + b + 1.0d) - PolyGamma.trigamma(a + b + N + 1.0d);
-                double val2 = b * (PolyGamma.trigamma(a + N + 1.0d) - PolyGamma.trigamma(a + 1.0d));
-                
-                // Store
-                object.x = b * val0 - C1;
-                object.y = val1 - C2;
-                derivatives.x1 = val2;
-                derivatives.x2 = val0;
-                derivatives.y1 = derivative21.evaluate(input);
-                derivatives.y2 = derivative22.evaluate(input);
-                
-                // Return
-                return result;
-            }
-        };
     }
 }

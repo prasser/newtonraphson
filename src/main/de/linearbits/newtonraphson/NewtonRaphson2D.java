@@ -15,6 +15,7 @@
  */
 package de.linearbits.newtonraphson;
 
+
 /**
  * The class implements the Newton-Raphson algorithm
  * 
@@ -274,7 +275,8 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
             if (solution == null) {
                 solution = start;
             } else {
-                solution = new Vector2D(Math.random() * init.x, Math.random() * init.y);
+                solution = new Vector2D((Math.random() * 2d - 1d) * init.x, 
+                                        (Math.random() * 2d - 1d) * init.y);
             }
 
             // Loop

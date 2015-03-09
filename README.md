@@ -7,17 +7,12 @@ for solving *bivariate non-linear equation systems*.
 
 As an example, we solve the following equation system:
 
-[![Equation system](https://raw.github.com/prasser/newtonraphson/master/media/system.png)](https://raw.github.com/prasser/newtonraphson/master/media/system.png)
+```
+3 * x^2 + 2 * y^2 - 35 = 0
+4 * x^2 - 3 * y^2 - 24 = 0
+```
 
-With 
-*n = 123456*
-*c1 = 0.025911404898870522* and 
-*c2 = 9.25018224693155E-5* 
-
-we have a solution at:
-
-*a = 10000* and
-*b = 0.01*
+This system has four solutions: (+-3, +-2)
 
 ### Basic solution
 
@@ -26,11 +21,7 @@ Implementing the object functions is straightforward. The first function:
 ```Java
 Function2D object1 = new Function2D() {
 	public Double evaluate(Vector2D input) {
-		double a = input.x, b = input.y, v = 0d;
-		for (int i = 1; i <= n; i++) {
-			v += b / (a + i);
-		}
-		return v - c1;
+		return 3d * input.x * input.x + 2d * input.y * input.y - 35d;
 	}
 }
 ```
@@ -40,12 +31,7 @@ And the second function:
 ```Java
 Function2D object2 = new Function2D() {
 	public Double evaluate(Vector2D input) {
-		double ab = input.x + input.y, v = 0d;
-		for (int i = 1; i <= n; i++) {
-			double t = ab + i;
-			v += 1d / (t * t);
-		}
-		return v - c2;
+		return 4d * input.x * input.x - 3d * input.y * input.y - 24d;
 	}
 }
 ```
@@ -64,116 +50,53 @@ This very simple variant of the solver will use a secant method for approximatin
 
 Measure    | Value
 ---------- | -------------
-Time       | 66.0 [ms]
+Time       | 0.0006 [ms]
 Tries      | 1
-Iterations | 16
-Quality    | 0.999999 [%]
+Iterations | 6
+Quality    | 0.999999
 
-We know that the derivatives of the first object function are only defined for *a > -1* and that the derivatives of
-the second object function are only defined for *a + b > -1*. So we may specify constraints:
+Without further constraints, the solver will return the solution (3,2). We may specify constraints to
+find a solution with negative parameters:
 
 ```Java
-Constraint2D constraint1 = new Constraint2D(){ 
-	public Boolean evaluate(Vector2D input) { return input.x > -1; } 
+Constraint2D constraint = new Constraint2D(){ 
+	public Boolean evaluate(Vector2D input) { return input.x < 0 && input.y < 0; } 
 };
-            
-Constraint2D constraint2 = new Constraint2D(){ 
-	public Boolean evaluate(Vector2D input) { return input.x + input.y > -1; } 
-};
-        
-solver = new NewtonRaphson2D(object1, object2, constraint1, constraint2)...
+                    
+solver = new NewtonRaphson2D(object1, object2, constraint)...
 ```
 
 ### First enhanced solution
 
-We can use software like [Wolfram|Alpha](http://www.wolframalpha.com/)
-to find closed forms of our object functions to speed up computations:
+We can now specify partial derivatives of our object functions:
 
-[![Formula1](https://raw.github.com/prasser/newtonraphson/master/media/formula1_closed.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula1_closed.png)
-[![Formula2](https://raw.github.com/prasser/newtonraphson/master/media/formula2_closed.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula2_closed.png)
-
-Now we can rewrite the first object function like this:
-
-```Java
-// Function2D object1Closed
-double a = input.x, b = input.y;
-return b * (PolyGamma.digamma(a + n + 1.0d) - PolyGamma.digamma(a + 1.0d)) - c1;
+```
+d/dx(f1) =   6 * x
+d/dy(f1) =   4 * y
+d/dx(f2) =   8 * x
+d/dy(f2) = - 6 * y
 ```
 
-And the second object function like this:
+Again, we create instances of ```Function2D``` to implement this derivatives:
 
 ```Java
-// Function2D object2Closed
-double a = input.x, b = input.y;
-return PolyGamma.trigamma(a + b + 1.0d) - PolyGamma.trigamma(a + b + n + 1.0d) - c2;
+Function2D derivative11 = new Function2D() {
+	public Double evaluate(Vector2D input) {
+		return 6d * input.x;
+	}
+}
 ```
-We can also run a simple check, to compare our new implementations with the old implementations to make sure that we
-did'nt make any errors when converting or implementing the functions:
+
+We can also run a simple check, to compare our explicit forms with the results of the secant method to make sure that
+we didn't make any mistakes:
 
 ```Java
 Function2DUtil util = new Function2DUtil(1e-6);
-util.isSameFunction1(object1Closed, object1, 0, 100, 0.1d, 1, 0.1d);
-util.isSameFunction1(object1Closed, object1, 0, 1, 0.001d, 1, 0.1d);
-util.isSameFunction2(object1Closed, object1, 0, 100, 0.1d, 1, 0.1d);
-util.isSameFunction2(object1Closed, object1, 0, 1, 0.001d, 1, 0.1d);
-```
-
-For example, the last method compares both functions for y-values in the range [0,1] with a stepping of 0.001 and
-a fixed parameter *x = 1*. The functions are considered to be equal, when their results do not differ by more than 10% (0.1).
-
-Using the closed forms of our object functions will greatly speed up our computations, by a factor of about 7000.
-We can also see the effect of the approximate nature of our implementations of digamma and trigamma, as the 
-algorithm converges more quickly (7 iterations instead of 19):
-
-Measure    | Value
----------- | -------------
-Time       | 0.01 [ms]
-Tries      | 1
-Iterations | 7
-Quality    | 99.872340[%]
- 
-### Second enhanced solution
-
-Again, we can use software like Wolfram|Alpha. In this case to find partial derivatives of our object functions:
-
-[![Formula1](https://raw.github.com/prasser/newtonraphson/master/media/formula1_da.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula1_da.png)
-[![Formula2](https://raw.github.com/prasser/newtonraphson/master/media/formula1_db.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula1_db.png)
-[![Formula1](https://raw.github.com/prasser/newtonraphson/master/media/formula2_da.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula2_da.png)
-[![Formula2](https://raw.github.com/prasser/newtonraphson/master/media/formula2_db.png)](https://raw.github.com/prasser/newtonraphson/master/media/formula2_db.png)
-
-With our approximations of digamma and trigamma, we can implement the first partial derivative *d/da* of the first object function like this:
-
-```Java
-// Function2D derivative11...
-double a = input.x, b = input.y;
-return b * (PolyGamma.trigamma(a + n + 1.0d) - PolyGamma.trigamma(a + 1.0d));
-```
-
-And the second partial derivative *d/db* of the first object function like this:
-
-```Java
-// Function2D derivative12...
-double a = input.x, b = input.y;
-return PolyGamma.digamma(a + n + 1.0d) - PolyGamma.digamma(a + 1.0d);
-```
-
-Again, we can run a simple check, to compare our explicit forms with the results of the secant method:
-
-```Java
-Function2DUtil util = new Function2DUtil(1e-6);        
-util.isDerivativeFunction1(object1Closed, derivative11, 0, 100, 0.1d, 1, 0.1d);
-util.isDerivativeFunction1(object1Closed, derivative11, 0, 1, 0.001d, 1, 0.1d);
-util.isDerivativeFunction2(object1Closed, derivative12, 0, 100, 0.1d, 1, 0.1d);
-util.isDerivativeFunction2(object1Closed, derivative12, 0, 1, 0.001d, 1, 0.1d);
+util.isDerivativeFunction1(object1, derivative11, 0.01, 100, 0.001, 0.1d, 0.01d);
+util.isDerivativeFunction2(object1, derivative12, 0.01, 100, 0.001, 0.1d, 0.01d);
 ```
 
 For the two partial derivatives of our second object function we still use a secant method:
-
-```Java
-Derivation2D derivation = new Derivation2D(1e-6);
-Function2D derivative21 = derivation.derive1(object2);
-Function2D derivative22 = derivation.derive2(object2);
-```
 
 And run the solver:
 
@@ -183,28 +106,23 @@ solver = new NewtonRaphson2D(object1Closed, object2Closed,
 							 derivative21, derivative22).solve();
 ```
 
-Using the explicit forms of some derivatives will again speed up our computations, this time by a factor of about 2:
+Using the explicit forms of the derivatives will speed up our computations, in this simple example by a factor of about 20%:
 
 Measure    | Value
 ---------- | -------------
-Time       | 0.004 [ms]
+Time       | 0.005 [ms]
 Tries      | 1
-Iterations | 7
-Quality    | 99.872340[%]
+Iterations | 6
+Quality    | 0.999999
 
 ### Third enhanced solution
 
-We can further speed up the solving process by realizing that our object functions and one of our partial derivatives
-share some code. We can therefore implement a "master" function that evaluates the object functions and the partial
+We can further speed up the solving process by realizing that our object functions share some code. 
+We can therefore implement a "master" function that evaluates the object functions and the partial
 derivatives at the same time:
 
 ```Java
 return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
-
-	// Use secant method for derivatives of the second object function
-	Derivation2D                   derivation   = new Derivation2D(1e-6);
-	Function2D                     derivative21 = derivation.derive1(object2Closed);
-	Function2D                     derivative22 = derivation.derive2(object2Closed);
 
 	// Prepare result objects
 	Vector2D                       object       = new Vector2D();
@@ -219,34 +137,32 @@ return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 	 */
 	public Pair<Vector2D, SquareMatrix2D> evaluate(Vector2D input) {
 	
+  		// Prepare
+  		double xSquare = input.x * input.x;
+		double ySquare = input.y * input.y;
+                
 		// Compute
-		double a = input.x, b = input.y;
-		double val0 = digamma(a + n + 1.0d) - digamma(a + 1.0d);
-		double val1 = trigamma(a + b + 1.0d) - trigamma(a + b + n + 1.0d);
-		double val2 = b * (trigamma(a + n + 1.0d) - trigamma(a + 1.0d));
-        
-        // Store
-		object.x = b * val0 - c1;
-		object.y = val1 - c2;
-		derivatives.x1 = val2;
-		derivatives.x2 = val0;
-        derivatives.y1 = derivative21.evaluate(input);
-        derivatives.y2 = derivative22.evaluate(input);
-        
-        // Return
-        return result;
+		object.x = 3d * xSquare + 2d * ySquare - 35d;
+		object.y = 4d * xSquare - 3d * ySquare - 24d;
+		derivatives.x1 = + 6d * input.x;
+		derivatives.x2 = + 4d * input.y;
+		derivatives.y1 = + 8d * input.x;
+		derivatives.y2 = - 6d * input.y;
+                
+		// Return
+		return result;
 	}
 };
 ```
 
-This will speed up our computations by an additional 25%:
+This will speed up our computations by an additional 20%:
 
 Measure    | Value
 ---------- | -------------
-Time       | 0.003 [ms]
+Time       | 0.0004 [ms]
 Tries      | 1
-Iterations | 7
-Quality    | 99.872340[%]
+Iterations | 6
+Quality    | 0.999999
 
 The complete implementation of this example can be found [here](https://github.com/prasser/newtonraphson/blob/master/src/test/de/linearbits/newtonraphson/tests/Tests.java)
 
