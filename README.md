@@ -39,11 +39,11 @@ Function2D object2 = new Function2D() {
 We may now solve the equation system with:
 
 ```Java
-NewtonRaphson2D solver = new NewtonRaphson2D(object1, object2)
-                                            .accuracy(1e-6)
-                                            .iterationsPerTry(1000)
-                                            .iterationsTotal(100000)
-                                            .solve();
+Vector2D result = new NewtonRaphson2D(object1, object2)
+                                     .accuracy(1e-6)
+                                     .iterationsPerTry(1000)
+                                     .iterationsTotal(100000)
+                                     .solve();
 ```
 
 This very simple variant of the solver will use a secant method for approximating the derivatives. The result is:
@@ -99,9 +99,9 @@ util.isDerivativeFunction2(object1, derivative12, 0.01, 100, 0.001, 0.1d, 0.01d)
 Finally, we run the solver:
 
 ```Java
-solver = new NewtonRaphson2D(object1Closed, object2Closed, 
+solver = new NewtonRaphson2D(object1, object2, 
 							 derivative11, derivative12, 
-							 derivative21, derivative22).solve();
+							 derivative21, derivative22);
 ```
 
 Using the explicit forms of the derivatives will speed up our computations, in this simple example by a factor of about 20%:
