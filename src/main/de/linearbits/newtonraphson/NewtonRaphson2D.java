@@ -268,6 +268,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
             // Init timers
             long startPerTry = System.currentTimeMillis();
             int iterations = 0;
+            totalTries++;
 
             // Init solution
             if (solution == null) {
@@ -299,7 +300,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
                         // Store measures
                         double quality = 1.0d - Math.sqrt(object.x * object.x + object.y * object.y);
                         measures = new NewtonRaphsonMeasures(totalIterations, 
-                                                             totalTries + 1, 
+                                                             totalTries, 
                                                              (int)(System.currentTimeMillis() - totalStart),
                                                              quality);
                         
@@ -331,7 +332,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
                         // Store measures
                         double quality = 1.0d - Math.sqrt(object.x * object.x + object.y * object.y);
                         measures = new NewtonRaphsonMeasures(totalIterations, 
-                                                             totalTries + 1, 
+                                                             totalTries, 
                                                              (int)(System.currentTimeMillis() - totalStart),
                                                              quality);
                         
@@ -372,7 +373,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
         // Store measures
         double quality = 1.0d - Math.sqrt(object.x * object.x + object.y * object.y);
         measures = new NewtonRaphsonMeasures(totalIterations, 
-                                             totalTries + 1, 
+                                             totalTries, 
                                              (int)(System.currentTimeMillis() - totalStart),
                                              quality);
         
