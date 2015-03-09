@@ -68,7 +68,7 @@ solver = new NewtonRaphson2D(object1, object2, constraint)...
 
 ### First enhanced solution
 
-We can now specify partial derivatives of our object functions:
+We can compute the partial derivatives of our object functions:
 
 ```
 d/dx(f1) =   6 * x
@@ -77,7 +77,7 @@ d/dx(f2) =   8 * x
 d/dy(f2) = - 6 * y
 ```
 
-Again, we create instances of ```Function2D``` to implement this derivatives:
+And provide instances of ```Function2D``` to implement these derivatives:
 
 ```Java
 Function2D derivative11 = new Function2D() {
@@ -96,9 +96,7 @@ util.isDerivativeFunction1(object1, derivative11, 0.01, 100, 0.001, 0.1d, 0.01d)
 util.isDerivativeFunction2(object1, derivative12, 0.01, 100, 0.001, 0.1d, 0.01d);
 ```
 
-For the two partial derivatives of our second object function we still use a secant method:
-
-And run the solver:
+Finally, we run the solver:
 
 ```Java
 solver = new NewtonRaphson2D(object1Closed, object2Closed, 
