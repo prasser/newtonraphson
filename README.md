@@ -113,7 +113,7 @@ Tries      | 1
 Iterations | 6
 Quality    | 0.999999
 
-### Third enhanced solution
+### Second enhanced solution
 
 We can further speed up the solving process by realizing that our object functions share some code. 
 We can therefore implement a "master" function that evaluates the object functions and the partial
