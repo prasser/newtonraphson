@@ -5,9 +5,19 @@ for solving *bivariate non-linear equation systems*.
 
 ## Example
 
-As an example, we solve the following equation system (*a* and *b* are our variables) for *n = 123412*:
+As an example, we solve the following equation system:
 
 [![Equation system](https://raw.github.com/prasser/newtonraphson/master/media/system.png)](https://raw.github.com/prasser/newtonraphson/master/media/system.png)
+
+With 
+*n = 123456*
+*c1 = 0.025911404898870522* and 
+*c2 = 9.25018224693155E-5* 
+
+we have a solution at:
+
+*a = 10000* and
+*b = 0.01*
 
 ### Basic solution
 
@@ -20,7 +30,7 @@ Function2D object1 = new Function2D() {
 		for (int i = 1; i <= n; i++) {
 			v += b / (a + i);
 		}
-		return v;
+		return v - c1;
 	}
 }
 ```
@@ -35,7 +45,7 @@ Function2D object2 = new Function2D() {
 			double t = ab + i;
 			v += 1d / (t * t);
 		}
-		return v;
+		return v - c2;
 	}
 }
 ```
@@ -54,10 +64,10 @@ This very simple variant of the solver will use a secant method for approximatin
 
 Measure    | Value
 ---------- | -------------
-Time       | 78.3 [ms]
+Time       | 66.0 [ms]
 Tries      | 1
-Iterations | 19
-Quality    | 99.864987 [%]
+Iterations | 16
+Quality    | 0.999999 [%]
 
 We know that the derivatives of the first object function are only defined for *a > -1* and that the derivatives of
 the second object function are only defined for *a + b > -1*. So we may specify constraints:
@@ -87,7 +97,7 @@ Now we can rewrite the first object function like this:
 ```Java
 // Function2D object1Closed
 double a = input.x, b = input.y;
-return b * (PolyGamma.digamma(a + n + 1.0d) - PolyGamma.digamma(a + 1.0d));
+return b * (PolyGamma.digamma(a + n + 1.0d) - PolyGamma.digamma(a + 1.0d)) - c1;
 ```
 
 And the second object function like this:
@@ -95,7 +105,7 @@ And the second object function like this:
 ```Java
 // Function2D object2Closed
 double a = input.x, b = input.y;
-return PolyGamma.trigamma(a + b + 1.0d) - PolyGamma.trigamma(a + b + n + 1.0d);
+return PolyGamma.trigamma(a + b + 1.0d) - PolyGamma.trigamma(a + b + n + 1.0d) - c2;
 ```
 We can also run a simple check, to compare our new implementations with the old implementations to make sure that we
 did'nt make any errors when converting or implementing the functions:
@@ -216,8 +226,8 @@ return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 		double val2 = b * (trigamma(a + n + 1.0d) - trigamma(a + 1.0d));
         
         // Store
-		object.x = b * val0;
-		object.y = val1;
+		object.x = b * val0 - c1;
+		object.y = val1 - c2;
 		derivatives.x1 = val2;
 		derivatives.x2 = val0;
         derivatives.y1 = derivative21.evaluate(input);

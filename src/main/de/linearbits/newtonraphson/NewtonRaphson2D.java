@@ -371,11 +371,10 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
         }
         
         // Store measures
-        double quality = 1.0d - Math.sqrt(object.x * object.x + object.y * object.y);
         measures = new NewtonRaphsonMeasures(totalIterations, 
                                              totalTries, 
                                              (int)(System.currentTimeMillis() - totalStart),
-                                             quality);
+                                             0d);
         
         // Nothing found
         return new Vector2D(Double.NaN, Double.NaN);
