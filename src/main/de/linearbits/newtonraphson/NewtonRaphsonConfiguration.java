@@ -44,6 +44,7 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
     public static NewtonRaphsonConfiguration<?> create() {
         return new NewtonRaphsonConfiguration<>();
     }
+    
     /** Runtime constraint */
     double             accuracy                   = DEFAULT_ACCURACY;
     /** Runtime constraint */
@@ -52,9 +53,10 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
     int                iterationsTotal            = DEFAULT_ITERATIONS_TOTAL;
     /** Runtime constraint */
     int                timePerTry                 = DEFAULT_TIME_PER_TRY;
-    
     /** Runtime constraint */
     int                timeTotal                  = DEFAULT_TIME_TOTAL;
+    /** Runtime constraint*/
+    int[][]            startValues                = null;
     
     /**
      * Constructor
@@ -78,7 +80,7 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
     public double getAccuracy() {
         return accuracy;
     }
-
+    
     /**
      * @return the iterationsPerTry
      */
@@ -91,6 +93,13 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
      */
     public int getIterationsTotal() {
         return iterationsTotal;
+    }
+
+    /**
+     * @return the start values
+     */
+    public int[][] getStartValues() {
+        return startValues;
     }
 
     /**
@@ -122,6 +131,23 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
     @SuppressWarnings("unchecked")
     public T iterationsTotal(int iterationsTotal) {
         this.iterationsTotal = iterationsTotal;
+        return (T)this;
+    }
+
+    /**
+     * Predefined start values
+     */
+    @SuppressWarnings("unchecked")
+    public T startValues(int[][] startValues) {
+        if (startValues == null || startValues.length == 0) {
+            throw new IllegalArgumentException("Invalid start values");
+        }
+        for (int[] values : startValues) {
+            if (values.length != 2) {
+                throw new IllegalArgumentException("Invalid start values");
+            }
+        }
+        this.startValues = startValues;
         return (T)this;
     }
 

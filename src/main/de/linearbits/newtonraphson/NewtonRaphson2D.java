@@ -262,6 +262,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
         long totalStart = System.currentTimeMillis();
         int totalTries = 0;
         int totalIterations = 0;
+        int offset = 0;
 
         // Solve
         outer: while (totalIterations <= this.iterationsTotal) {
@@ -275,8 +276,12 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
             if (solution == null) {
                 solution = start;
             } else {
-                solution = new Vector2D((Math.random() * 2d - 1d) * init.x, 
-                                        (Math.random() * 2d - 1d) * init.y);
+                if (this.startValues != null && offset <= startValues.length) {
+                    solution = new Vector2D(startValues[offset][0], startValues[offset++][1]);
+                } else {
+                    solution = new Vector2D((Math.random() * 2d - 1d) * init.x, 
+                                            (Math.random() * 2d - 1d) * init.y);
+                }
             }
 
             // Loop
