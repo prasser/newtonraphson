@@ -217,6 +217,10 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
         this.iterationsTotal = config.iterationsTotal;
         this.timePerTry = config.timePerTry;
         this.timeTotal = config.timeTotal;
+        this.startValues = config.startValues;
+        if (this.startValues != null) {
+            this.iterationsTotal = this.startValues.length * iterationsPerTry;
+        }
         return this;
     }
     
