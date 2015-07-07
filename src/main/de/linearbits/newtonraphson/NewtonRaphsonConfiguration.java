@@ -44,19 +44,19 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
     public static NewtonRaphsonConfiguration<?> create() {
         return new NewtonRaphsonConfiguration<>();
     }
-    
+
     /** Runtime constraint */
-    double             accuracy                   = DEFAULT_ACCURACY;
+    double     accuracy         = DEFAULT_ACCURACY;
     /** Runtime constraint */
-    int                iterationsPerTry           = DEFAULT_ITERATIONS_PER_TRY;
+    int        iterationsPerTry = DEFAULT_ITERATIONS_PER_TRY;
     /** Runtime constraint */
-    int                iterationsTotal            = DEFAULT_ITERATIONS_TOTAL;
+    int        iterationsTotal  = DEFAULT_ITERATIONS_TOTAL;
     /** Runtime constraint */
-    int                timePerTry                 = DEFAULT_TIME_PER_TRY;
+    int        timePerTry       = DEFAULT_TIME_PER_TRY;
     /** Runtime constraint */
-    int                timeTotal                  = DEFAULT_TIME_TOTAL;
-    /** Runtime constraint*/
-    int[][]            startValues                = null;
+    int        timeTotal        = DEFAULT_TIME_TOTAL;
+    /** Runtime constraint */
+    double[][] startValues      = null;
     
     /**
      * Constructor
@@ -98,7 +98,7 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
     /**
      * @return the start values
      */
-    public int[][] getStartValues() {
+    public double[][] getStartValues() {
         return startValues;
     }
 
@@ -138,11 +138,11 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
      * Predefined start values
      */
     @SuppressWarnings("unchecked")
-    public T startValues(int[][] startValues) {
+    public T startValues(double[][] startValues) {
         if (startValues == null || startValues.length == 0) {
             throw new IllegalArgumentException("Invalid start values");
         }
-        for (int[] values : startValues) {
+        for (double[] values : startValues) {
             if (values.length != 2) {
                 throw new IllegalArgumentException("Invalid start values");
             }
