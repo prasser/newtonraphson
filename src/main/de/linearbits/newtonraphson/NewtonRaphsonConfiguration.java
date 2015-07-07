@@ -143,7 +143,7 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
             throw new IllegalArgumentException("Invalid start values");
         }
         for (double[] values : startValues) {
-            if (values.length != 2) {
+            if (values == null || values.length != 2) {
                 throw new IllegalArgumentException("Invalid start values");
             }
         }
