@@ -280,7 +280,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
             if (solution == null) {
                 solution = start;
             } else {
-                if (this.startValues != null && offset <= startValues.length) {
+                if (this.startValues != null && offset < startValues.length) {
                     solution = new Vector2D(startValues[offset][0], startValues[offset++][1]);
                 } else {
                     solution = new Vector2D((Math.random() * 2d - 1d) * init.x, 
