@@ -365,18 +365,16 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
                         }
                     }
                 }
-    
-                // Error or constraint reached
+                // Timing limit
                 long time = System.currentTimeMillis();
+                if (time - totalStart > timeTotal) {
+                    break outer;
+                }
+                // Error or constraint reached
                 if (solution.isNaN() || 
                     iterations++ > iterationsPerTry || 
                     time - startPerTry > timePerTry) {
                     break inner;
-                }
-                
-                // Timing limit
-                if (time - totalStart > timeTotal) {
-                    break outer;
                 }
             }
         }
