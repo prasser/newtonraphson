@@ -56,7 +56,7 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
     /** Runtime constraint */
     int        timeTotal        = DEFAULT_TIME_TOTAL;
     /** Runtime constraint */
-    double[][] startValues      = null;
+    double[][] preparedStartValues      = null;
     
     /**
      * Constructor
@@ -99,7 +99,7 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
      * @return the start values
      */
     public double[][] getStartValues() {
-        return startValues;
+        return preparedStartValues;
     }
 
     /**
@@ -138,7 +138,7 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
      * Predefined start values
      */
     @SuppressWarnings("unchecked")
-    public T startValues(double[][] startValues) {
+    public T preparedStartValues(double[][] startValues) {
         if (startValues == null || startValues.length == 0) {
             throw new IllegalArgumentException("Invalid start values");
         }
@@ -147,7 +147,7 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
                 throw new IllegalArgumentException("Invalid start values");
             }
         }
-        this.startValues = startValues;
+        this.preparedStartValues = startValues;
         return (T)this;
     }
 

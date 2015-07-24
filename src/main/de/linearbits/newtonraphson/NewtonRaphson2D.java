@@ -217,9 +217,9 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
         this.iterationsTotal = config.iterationsTotal;
         this.timePerTry = config.timePerTry;
         this.timeTotal = config.timeTotal;
-        this.startValues = config.startValues;
-        if (this.startValues != null) {
-            this.iterationsTotal = this.startValues.length * iterationsPerTry;
+        this.preparedStartValues = config.preparedStartValues;
+        if (this.preparedStartValues != null) {
+            this.iterationsTotal = this.preparedStartValues.length * iterationsPerTry;
         }
         return this;
     }
@@ -266,7 +266,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
         long totalStart = System.currentTimeMillis();
         int totalTries = 0;
         int totalIterations = 0;
-        int offset = 0;
+        int preparedStartValuesOffset = 0;
 
         // Solve
         outer: while (totalIterations <= this.iterationsTotal) {
@@ -280,8 +280,8 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
             if (solution == null) {
                 solution = start;
             } else {
-                if (this.startValues != null && offset < startValues.length) {
-                    solution = new Vector2D(startValues[offset][0], startValues[offset++][1]);
+                if (this.preparedStartValues != null) {
+                    solution = new Vector2D(preparedStartValues[preparedStartValuesOffset][0], preparedStartValues[preparedStartValuesOffset++][1]);
                 } else {
                     solution = new Vector2D((Math.random() * 2d - 1d) * init.x, 
                                             (Math.random() * 2d - 1d) * init.y);
@@ -373,7 +373,8 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
                 // Error or constraint reached
                 if (solution.isNaN() || 
                     iterations++ > iterationsPerTry || 
-                    time - startPerTry > timePerTry) {
+                    time - startPerTry > timePerTry ||
+                    preparedStartValuesOffset == preparedStartValues.length) {
                     break inner;
                 }
             }
