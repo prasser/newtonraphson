@@ -219,7 +219,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
         this.timeTotal = config.timeTotal;
         this.preparedStartValues = config.preparedStartValues;
         if (this.preparedStartValues != null) {
-            this.iterationsTotal = this.preparedStartValues.length * iterationsPerTry;
+            this.iterationsTotal = (this.preparedStartValues.length + 1) * iterationsPerTry; // Includes given start value
         }
         return this;
     }
@@ -274,7 +274,6 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
             // Init timers
             long startPerTry = System.currentTimeMillis();
             int iterations = 0;
-            totalTries++;
 
             // Init solution
             if (solution == null) {
@@ -367,14 +366,14 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
                 }
                 // Timing limit
                 long time = System.currentTimeMillis();
-                if (time - totalStart > timeTotal) {
+                if (time - totalStart > timeTotal ||
+                    preparedStartValuesOffset == preparedStartValues.length) {
                     break outer;
                 }
                 // Error or constraint reached
                 if (solution.isNaN() || 
-                    iterations++ > iterationsPerTry || 
-                    time - startPerTry > timePerTry ||
-                    preparedStartValuesOffset == preparedStartValues.length) {
+                    iterations++ >= iterationsPerTry || 
+                    time - startPerTry > timePerTry) {
                     break inner;
                 }
             }
