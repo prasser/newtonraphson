@@ -367,7 +367,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
                 // Timing limit
                 long time = System.currentTimeMillis();
                 if (time - totalStart > timeTotal ||
-                    preparedStartValuesOffset == preparedStartValues.length) {
+                    (preparedStartValues != null && preparedStartValuesOffset == preparedStartValues.length)) {
                     break outer;
                 }
                 // Error or constraint reached
