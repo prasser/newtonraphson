@@ -46,7 +46,7 @@ Vector2D result = new NewtonRaphson2D(object1, object2)
                                      .solve();
 ```
 
-This very simple variant of the solver will use a secant method for approximating the derivatives. The result is:
+This very simple variant of the solver will use the finite difference method for approximating the derivatives. The result is:
 
 Measure    | Value
 ---------- | -------------
@@ -87,7 +87,7 @@ Function2D derivative11 = new Function2D() {
 }
 ```
 
-We can also run a simple check, to compare our explicit forms with the results of the secant method to make sure that
+We can also run a simple check, to compare our explicit forms with the results of the finite difference method to make sure that
 we didn't make any mistakes:
 
 ```Java

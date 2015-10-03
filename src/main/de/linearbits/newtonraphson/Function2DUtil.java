@@ -22,27 +22,6 @@ package de.linearbits.newtonraphson;
  */
 public class Function2DUtil {
 
-    /** Delta */
-    private static final double DEFAULT_DELTA = 1e-6;
-
-    /** Delta */
-    private final double        delta;
-
-    /**
-     * Creates a new instance
-     */
-    public Function2DUtil() {
-        this.delta = DEFAULT_DELTA;
-    }
-
-    /**
-     * Creates a new instance
-     * @param delta
-     */
-    public Function2DUtil(double delta) {
-        this.delta = delta;
-    }
-
     /**
      * Helper function that tries to determine whether the second function is a derivative regarding the first argument
      * of the first function in the range [x1,x2] at y with the given accuracy 
@@ -63,7 +42,7 @@ public class Function2DUtil {
                                                 double y,
                                                 double accuracy) {
         
-        Derivation2D derivation = new Derivation2D(this.delta);
+        Derivation2D derivation = new Derivation2D();
         Function2D estimate = derivation.derive1(function);
         return isSameFunction1(estimate, derivative, x1, x2, delta, y, accuracy);
     }
@@ -87,7 +66,7 @@ public class Function2DUtil {
                                                 double x,
                                                 double accuracy) {
 
-        Derivation2D derivation = new Derivation2D(this.delta);
+        Derivation2D derivation = new Derivation2D();
         Function2D estimate = derivation.derive2(function);
         return isSameFunction2(estimate, derivative, y1, y2, delta, x, accuracy);
     }

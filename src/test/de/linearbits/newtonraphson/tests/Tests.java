@@ -91,7 +91,7 @@ public class Tests {
                                      .iterationsPerTry(1000)
                                      .iterationsTotal(100000);
         
-        Function2DUtil util = new Function2DUtil(1e-6);
+        Function2DUtil util = new Function2DUtil();
         System.out.println("\nChecking derivatives:");
         System.out.println("Is derivative: " + util.isDerivativeFunction1(object1, derivative11, 0.01, 100, 0.001, 0.1d, 0.01d));
         System.out.println("Is derivative: " + util.isDerivativeFunction2(object1, derivative12, 0.01, 100, 0.001, 0.1d, 0.01d));

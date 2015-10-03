@@ -260,7 +260,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
         Vector2D solution = null;
         Vector2D object = new Vector2D();
         SquareMatrix2D derivatives = new SquareMatrix2D();
-        Derivation2D derivation = this.derivativeFunction != null ? null : new Derivation2D(accuracy);
+        Derivation2D derivation = this.derivativeFunction != null ? null : new Derivation2D();
         
         // Measure
         long totalStart = System.currentTimeMillis();

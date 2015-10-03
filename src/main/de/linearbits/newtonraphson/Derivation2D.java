@@ -16,32 +16,14 @@
 package de.linearbits.newtonraphson;
 
 /**
- * This class uses a secant-method to approximates derivatives of functions
+ * This class uses the finite difference method to approximate derivatives of functions
  * 
  * @author Fabian Prasser
  */
 public class Derivation2D {
 
-    /** Delta */
-    private static final double DEFAULT_DELTA = 1e-6;
-
-    /** Delta */
-    private final double        delta;
-
-    /**
-     * Creates a new instance
-     */
-    public Derivation2D() {
-        this.delta = DEFAULT_DELTA;
-    }
-
-    /**
-     * Creates a new instance
-     * @param delta
-     */
-    public Derivation2D(double delta) {
-        this.delta = delta;
-    }
+    /** See http://www.karenkopecky.net/Teaching/eco613614/Notes_NumericalDifferentiation.pdf*/
+    private static final double EPSILON = Math.sqrt(Math.ulp(1d));
 
     /**
      * Returns the function derived by the first argument
@@ -87,6 +69,8 @@ public class Derivation2D {
      * @return
      */
     public double evaluateDerivativeFunction1(Function2D function, Vector2D point, double result) {
+        // See http://www.karenkopecky.net/Teaching/eco613614/Notes_NumericalDifferentiation.pdf
+        double delta = EPSILON * Math.max(Math.abs(point.x), 1);
         double y1 = result;
         point.x += delta;
         double y2 = function.evaluate(point);
@@ -112,6 +96,8 @@ public class Derivation2D {
      * @return
      */
     public double evaluateDerivativeFunction2(Function2D function, Vector2D point, double result) {
+        // See http://www.karenkopecky.net/Teaching/eco613614/Notes_NumericalDifferentiation.pdf
+        double delta = EPSILON * Math.max(Math.abs(point.y), 1);
         double y1 = result;
         point.y += delta;
         double y2 = function.evaluate(point);
