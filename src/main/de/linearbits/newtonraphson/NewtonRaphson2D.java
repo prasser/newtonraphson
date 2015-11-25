@@ -16,6 +16,7 @@
 package de.linearbits.newtonraphson;
 
 
+
 /**
  * The class implements the Newton-Raphson algorithm
  * 
@@ -356,6 +357,13 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
                 object.times(derivatives);
                 solution.minus(object);
                 
+                // Timing limit
+                long time = System.currentTimeMillis();
+                if (time - totalStart > timeTotal ||
+                    (preparedStartValues != null && preparedStartValuesOffset == preparedStartValues.length)) {
+                    break outer;
+                }
+
                 // Check constraints
                 if (constraints != null) {
                     for (Constraint2D constraint : constraints) {
@@ -364,12 +372,7 @@ public class NewtonRaphson2D extends NewtonRaphsonConfiguration<NewtonRaphson2D>
                         }
                     }
                 }
-                // Timing limit
-                long time = System.currentTimeMillis();
-                if (time - totalStart > timeTotal ||
-                    (preparedStartValues != null && preparedStartValuesOffset == preparedStartValues.length)) {
-                    break outer;
-                }
+                
                 // Error or constraint reached
                 if (solution.isNaN() || 
                     iterations++ >= iterationsPerTry || 
