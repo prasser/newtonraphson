@@ -139,12 +139,14 @@ public class NewtonRaphsonConfiguration<T> implements Serializable {
      */
     @SuppressWarnings("unchecked")
     public T preparedStartValues(double[][] startValues) {
-        if (startValues == null || startValues.length == 0) {
+        if (startValues.length == 0) {
             throw new IllegalArgumentException("Invalid start values");
         }
-        for (double[] values : startValues) {
-            if (values == null || values.length != 2) {
-                throw new IllegalArgumentException("Invalid start values");
+        if (startValues != null) {
+            for (double[] values : startValues) {
+                if (values == null || values.length != 2) {
+                    throw new IllegalArgumentException("Invalid start values");
+                }
             }
         }
         this.preparedStartValues = startValues;
