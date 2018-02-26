@@ -99,9 +99,7 @@ util.isDerivativeFunction2(object1, derivative12, 0.01, 100, 0.001, 0.1d, 0.01d)
 Finally, we run the solver:
 
 ```Java
-solver = new NewtonRaphson2D(object1, object2, 
-							 derivative11, derivative12, 
-							 derivative21, derivative22);
+solver = new NewtonRaphson2D(object1, object2, derivative11, derivative12, derivative21, derivative22);
 ```
 
 Using the explicit forms of the derivatives will speed up our computations, in this simple example by a factor of about 20%:
