@@ -124,9 +124,8 @@ return new Function<Vector2D, Pair<Vector2D, SquareMatrix2D>>() {
 
 	// Prepare result objects
 	Vector2D                       object       = new Vector2D();
-    SquareMatrix2D                 derivatives  = new SquareMatrix2D();
-    Pair<Vector2D, SquareMatrix2D> result       = new Pair<Vector2D, SquareMatrix2D>
-    											  (object, derivatives);
+	SquareMatrix2D                 derivatives  = new SquareMatrix2D();
+	Pair<Vector2D, SquareMatrix2D> result       = new Pair<Vector2D, SquareMatrix2D>(object, derivatives);
 
 	/**
 	 * Eval
